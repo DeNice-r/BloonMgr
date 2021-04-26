@@ -18,27 +18,12 @@ using Newtonsoft.Json;
 
 namespace BloonMgr
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class Program : Window
     {
         private ObservableCollection<OrderEntry> OrderList;
-        private OrderEntry SelectedOrder;
+        //private OrderEntry SelectedOrder;
         private OrderPart SelectedPart;
-        private OrderEntry tempOrder;
-        private OrderEntry TempOrder {
-            get
-            {
-                var r = tempOrder;
-                tempOrder = null;
-                return r;
-            }
-            set
-            {
-                tempOrder = value;
-            }
-        }
+        private OrderEntry TempOrder;
         private OrderPart TempPart;
         private bool UnsavedChanges = false;
         private bool isNewOrder = false;
@@ -54,8 +39,6 @@ namespace BloonMgr
                 OrderList.Add(new OrderEntry(DateTime.Today.AddDays(x), "050" + rnd.Next(1000000, 10000000), "по рекламе " + x, new ObservableCollection<OrderPart>() { OrderPart.RandomOrder(), OrderPart.RandomOrder(), OrderPart.RandomOrder() }));
                 OrderList.Add(new OrderEntry(DateTime.Today.AddDays(-x), "097" + rnd.Next(1000000, 10000000), "инстаграмм " + -x, new ObservableCollection<OrderPart>() { OrderPart.RandomOrder(), OrderPart.RandomOrder(), OrderPart.RandomOrder() }));
             }
-
-            List<string> l = new List<string>() { "big", "fat", "long", "black" };
             OrderGrid.ItemsSource = OrderList;
         }
 
@@ -63,11 +46,12 @@ namespace BloonMgr
         {
             var ogrid = (DataGrid)sender;
             if (ogrid.SelectedIndex == -1) return;
-            SelectedOrder = (OrderEntry)ogrid.SelectedItem;
-            OrderDate.SelectedDate = SelectedOrder.Date;
-            OrderNotes.Text = SelectedOrder.Notes;
-            OrderPhone.Text = SelectedOrder.Phone;
-            OrderpartList.ItemsSource = SelectedOrder.Orders;
+
+            TempOrder = new OrderEntry((OrderEntry)ogrid.SelectedItem);
+            OrderDate.SelectedDate = TempOrder.Date;
+            OrderNotes.Text = TempOrder.Notes;
+            OrderPhone.Text = TempOrder.Phone;
+            OrderpartList.ItemsSource = TempOrder.Orders;
         }
 
         private void ProductName_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -172,23 +156,23 @@ namespace BloonMgr
             //    Search.IsDropDownOpen = true;
         }
 
-        private void OrderDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
-            SelectedOrder.Date = Convert.ToDateTime(((DatePicker)sender).SelectedDate);
+            isNewOrder = true;
+            TempOrder = new OrderEntry();
         }
 
         private void OrderpartList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var ogrid = (DataGrid)sender;
-            if (ogrid.SelectedIndex != -1)
-            {
+            try { 
+                var ogrid = (DataGrid)sender;
                 SelectedPart = (OrderPart)ogrid.SelectedItem;
                 ProductName.Text = SelectedPart.ItemName;
                 ProductPrice.Text = SelectedPart.Price.ToString();
                 ProductQty.Text = SelectedPart.Quantity.ToString();
                 ProductTotal.Text = SelectedPart.Total.ToString();
             }
-            else
+            catch
             {
                 SelectedPart = null;
                 ProductName.Text = "";
@@ -204,14 +188,8 @@ namespace BloonMgr
             Int32 pqty = Convert.ToInt32(ProductQty.Text);
             String denom = (String)ProductName.Text;
             if (denom != "" && true)
-                SelectedOrder.Orders.Add(new OrderPart(Products.GetID(denom), pprice, pqty));
+                TempOrder.Orders.Add(new OrderPart(Products.GetID(denom), pprice, pqty));
             UnsavedChanges = true;
-        }
-
-        private void OrderNotes_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            SelectedOrder.Notes = ((TextBox)sender).Text;
-            OrderGrid.Items.Refresh();
         }
 
         private void ProductPriceOrQty_TextChanged(object sender, TextChangedEventArgs e)
@@ -232,19 +210,26 @@ namespace BloonMgr
             }
         }
 
-        private void NewOrder_Click(object sender, RoutedEventArgs e)
-        {
-            isNewOrder = true;
-            TempOrder = new OrderEntry();
-        }
 
+        // TODO: Не сохраняется / не изменяется в таблице (пройти в дебуге пошагово для начала)
         private void OrderSave_Click(object sender, RoutedEventArgs e)
         {
+            TempOrder.Date = (DateTime) OrderDate.SelectedDate;
+            TempOrder.Notes = OrderNotes.Text;
+            TempOrder.Phone = OrderPhone.Text;
             if (isNewOrder)
             {
-                OrderList.Add(TempOrder);
+                OrderList.Add(new OrderEntry(TempOrder));
+                isNewOrder = false;
+                OrderGrid.SelectedIndex = -1;
             }
-            isNewOrder = false;
+            else
+            {
+                OrderGrid.SelectedItem = new OrderEntry(TempOrder);
+                TempOrder = null;
+                OrderGrid.SelectedIndex = -1;
+            }
+            OrderGrid.Items.Refresh();
         }
     }
 }

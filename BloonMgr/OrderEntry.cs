@@ -13,8 +13,8 @@ namespace BloonMgr
     class OrderEntry
     {
         private DateTime mDate;
-        public Int32 OrderID { get; set; }
-        public static Int32 Max_ID = 1;
+        public UInt64 OrderID { get; set; }
+        public static UInt64 Max_ID = 1;
         public DateTime Date
         {
             get
@@ -60,9 +60,21 @@ namespace BloonMgr
             Init(date, phone, notes, orders);
         }
 
-        private void Init(DateTime date, String phone, String notes, ObservableCollection<OrderPart> orders)
+        public OrderEntry(OrderEntry oe)
         {
-            OrderID = Max_ID++;
+            Init(oe.Date, oe.Phone, oe.Notes, new ObservableCollection<OrderPart>(oe.Orders), oe.OrderID);
+        }
+
+        private void Init(DateTime date, String phone, String notes, ObservableCollection<OrderPart> orders, UInt64 id = 0)
+        {
+            if (id == 0)
+                OrderID = Max_ID++;
+            else
+            {
+                OrderID = id;
+                if(Max_ID < OrderID)
+                    Max_ID = OrderID + 1;
+            }
             mDate = date;
             Phone = phone;
             Notes = notes;

@@ -24,10 +24,9 @@
         <Button x:Name="NewOrder" Content="➕ Новый заказ" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="105" Height="32" Click="NewOrder_Click"/>
         <Button x:Name="DeleteOrder" Content="➖" HorizontalAlignment="Left" Margin="730,314,0,0" VerticalAlignment="Top" Width="30" Height="32" />
 
-        <DatePicker x:Name="OrderDate" SelectedDateChanged="OrderDate_SelectedDateChanged" HorizontalAlignment="Left" Margin="10,351,0,0" VerticalAlignment="Top" Width="115"/>
+        <DatePicker x:Name="OrderDate" HorizontalAlignment="Left" Margin="10,351,0,0" VerticalAlignment="Top" Width="115"/>
         <TextBox x:Name="OrderPhone" HorizontalAlignment="Left" FontSize="16" Height="24" Margin="130,351,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
-
-        <TextBox x:Name="OrderNotes" HorizontalAlignment="Left" FontSize="16" Height="240" Margin="10,380,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" TextChanged="OrderNotes_TextChanged"/>
+        <TextBox x:Name="OrderNotes" HorizontalAlignment="Left" FontSize="16" Height="240" Margin="10,380,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300"/>
         <DataGrid x:Name="OrderpartList" IsReadOnly="true" SelectionChanged="OrderpartList_SelectionChanged" AutoGenerateColumns="False" HorizontalAlignment="Left" Height="241" Margin="315,351,0,0" VerticalAlignment="Top" Width="445">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Товар" Binding="{Binding Path=ItemName}" Width="210"/>
