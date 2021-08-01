@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace BloonMgr
 {
@@ -25,7 +21,8 @@ namespace BloonMgr
             }
         }
 
-        public String HintText {
+        public String HintText
+        {
             get
             {
                 return hint.Text;

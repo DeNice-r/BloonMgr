@@ -1,25 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Globalization;
-using Newtonsoft.Json;
 
 namespace BloonMgr
 {
     public partial class Program : Window
     {
+        private AppContext db = new AppContext();
         private ObservableCollection<OrderEntry> OrderList;
         //private OrderEntry SelectedOrder;
         private OrderPart SelectedPart;
@@ -31,10 +20,11 @@ namespace BloonMgr
         public Program()
         {
             InitializeComponent();
-            OrderList = new ObservableCollection<OrderEntry> { new OrderEntry("0501728331", "по рекламе", new ObservableCollection<OrderPart>() { new OrderPart(50, 3), new OrderPart(21, 10) }),
+
+            OrderList = new ObservableCollection<OrderEntry> { new OrderEntry(DateTime.Now, "0501728331", "по рекламе", "2/491,95/20\\1/123,95/9"),
                         new OrderEntry("0977299902", "инстаграмм", new ObservableCollection<OrderPart>() { new OrderPart(85, 2), new OrderPart(150), new OrderPart(23000, 25) })};
 
-            for(int x = 0; x < 100; x++)
+            for (int x = 0; x < 100; x++)
             {
                 OrderList.Add(new OrderEntry(DateTime.Today.AddDays(x), "050" + rnd.Next(1000000, 10000000), "по рекламе " + x, new ObservableCollection<OrderPart>() { OrderPart.RandomOrder(), OrderPart.RandomOrder(), OrderPart.RandomOrder() }));
                 OrderList.Add(new OrderEntry(DateTime.Today.AddDays(-x), "097" + rnd.Next(1000000, 10000000), "инстаграмм " + -x, new ObservableCollection<OrderPart>() { OrderPart.RandomOrder(), OrderPart.RandomOrder(), OrderPart.RandomOrder() }));
@@ -45,13 +35,23 @@ namespace BloonMgr
         private void OrderGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var ogrid = (DataGrid)sender;
-            if (ogrid.SelectedIndex == -1) return;
+            if (ogrid.SelectedIndex == -1)
+            {
+                TempOrder = new OrderEntry();
+                OrderDate.SelectedDate = TempOrder.Date;
+                OrderNotes.Text = TempOrder.Notes;
+                OrderPhone.Text = TempOrder.Phone;
+                OrderpartList.ItemsSource = TempOrder.Orders;
+            }
+            else
+            {
+                TempOrder = new OrderEntry((OrderEntry)ogrid.SelectedItem);
+                OrderDate.SelectedDate = TempOrder.Date;
+                OrderNotes.Text = TempOrder.Notes;
+                OrderPhone.Text = TempOrder.Phone;
+                OrderpartList.ItemsSource = TempOrder.Orders;
+            }
 
-            TempOrder = new OrderEntry((OrderEntry)ogrid.SelectedItem);
-            OrderDate.SelectedDate = TempOrder.Date;
-            OrderNotes.Text = TempOrder.Notes;
-            OrderPhone.Text = TempOrder.Phone;
-            OrderpartList.ItemsSource = TempOrder.Orders;
         }
 
         private void ProductName_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -159,12 +159,13 @@ namespace BloonMgr
         private void NewOrder_Click(object sender, RoutedEventArgs e)
         {
             isNewOrder = true;
-            TempOrder = new OrderEntry();
+            OrderGrid.SelectedIndex = -1;
         }
 
         private void OrderpartList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try { 
+            try
+            {
                 var ogrid = (DataGrid)sender;
                 SelectedPart = (OrderPart)ogrid.SelectedItem;
                 ProductName.Text = SelectedPart.ItemName;
@@ -214,7 +215,7 @@ namespace BloonMgr
         // TODO: Не сохраняется / не изменяется в таблице (пройти в дебуге пошагово для начала)
         private void OrderSave_Click(object sender, RoutedEventArgs e)
         {
-            TempOrder.Date = (DateTime) OrderDate.SelectedDate;
+            TempOrder.Date = (DateTime)OrderDate.SelectedDate;
             TempOrder.Notes = OrderNotes.Text;
             TempOrder.Phone = OrderPhone.Text;
             if (isNewOrder)
@@ -225,11 +226,41 @@ namespace BloonMgr
             }
             else
             {
-                OrderGrid.SelectedItem = new OrderEntry(TempOrder);
+                ((OrderEntry)OrderGrid.SelectedItem).SetTo(TempOrder);
                 TempOrder = null;
                 OrderGrid.SelectedIndex = -1;
             }
             OrderGrid.Items.Refresh();
+            Products.Save();
         }
+
+        private void DeleteOrder_Click(object sender, RoutedEventArgs e)
+        {
+            var r = MessageBox.Show("Удалить этот заказ?", "Удаление заказа", MessageBoxButton.OKCancel);
+            if (r == MessageBoxResult.OK)
+            {
+                OrderList.RemoveAt(OrderGrid.SelectedIndex);
+            }
+        }
+
+        //private bool LoadData()
+        //{
+        //    try
+        //    {
+        //        System.IO.File.ReadAllText("orderlist.json");
+        //        return true;
+        //    }
+        //    catch { return false; }
+        //}
+
+        //private bool SaveData()
+        //{
+        //    try
+        //    {
+        //        System.IO.File.WriteAllText("orderlist.json", JsonConvert.SerializeObject(OrderList));
+        //        return true;
+        //    }
+        //    catch { return false; }
+        //}
     }
 }

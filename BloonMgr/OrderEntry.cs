@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace BloonMgr
 {
@@ -60,9 +54,20 @@ namespace BloonMgr
             Init(date, phone, notes, orders);
         }
 
+        public OrderEntry(DateTime date, String phone, String notes, String orders) // Конструктор для создания экземпляра из данных строки БД 
+        {
+            ObservableCollection<OrderPart> dorders = new ObservableCollection<OrderPart>();
+            foreach (var op in orders.Split('\\'))
+            {
+                var split = op.Split('/');
+                dorders.Add(new OrderPart(Convert.ToInt32(split[0]), Convert.ToDouble(split[1]), Convert.ToInt32(split[2])));
+            }
+            Init(date, phone, notes, dorders);
+        }
+
         public OrderEntry(OrderEntry oe)
         {
-            Init(oe.Date, oe.Phone, oe.Notes, new ObservableCollection<OrderPart>(oe.Orders), oe.OrderID);
+            Init(oe.Date, oe.Phone, oe.Notes, oe.Orders, oe.OrderID);
         }
 
         private void Init(DateTime date, String phone, String notes, ObservableCollection<OrderPart> orders, UInt64 id = 0)
@@ -72,13 +77,29 @@ namespace BloonMgr
             else
             {
                 OrderID = id;
-                if(Max_ID < OrderID)
+                if (Max_ID < OrderID)
                     Max_ID = OrderID + 1;
             }
             mDate = date;
             Phone = phone;
             Notes = notes;
-            Orders = orders;
+            Orders = new ObservableCollection<OrderPart>(orders);
+        }
+
+        public void SetTo(OrderEntry oe)
+        {
+            Init(oe.mDate, oe.Phone, oe.Notes, oe.Orders, oe.OrderID);
+        }
+
+        public override String ToString()
+        {
+            String result = "";
+            foreach (var x in mOrders)
+            {
+                result += x.ToString() + "\\";
+            }
+
+            return result;
         }
     }
 
@@ -129,7 +150,14 @@ namespace BloonMgr
         }
         public static OrderPart RandomOrder()
         {
-            return new OrderPart(Products.RandomID(), Math.Round(Program.rnd.NextDouble() * 501, 2), Program.rnd.Next(1,31));
+            return new OrderPart(Products.RandomID(), Math.Round(Program.rnd.NextDouble() * 501, 2), Program.rnd.Next(1, 31));
         }
-    };
+
+        public override String ToString()
+        {
+            return ItemID.ToString() + "/" + mPrice.ToString() + "/" + mQuantity.ToString();
+        }
+    }
 }
+
+// TODO: создание/проверка наличия двух таблиц с помощью скулайт, выгрузка/загрузка данных

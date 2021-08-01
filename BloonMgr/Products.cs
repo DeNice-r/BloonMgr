@@ -1,18 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Runtime.CompilerServices;
 
 namespace BloonMgr
 {
-    
+
     static class Products
     {
         static List<String> Denoms = new List<string> { "фол Звезда 32\"", "мат Шар 11\"", "фол Звезда 28\"", "мат Шар 12\"", "фол Цифра '5' 30\"" }; // denominations
         static List<Int32> LastPrice = new List<int> { 0, 0, 0, 0, 0 };
+
+        static Products()
+        {
+            Denoms = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("Denoms.json"));
+        }
+
         public static Int32 GetID(String denom)
         {
             Int32 idx = Denoms.IndexOf(denom);
@@ -40,9 +45,19 @@ namespace BloonMgr
             }
         }
 
+        public static void AddName(String denom)
+        {
+
+        }
+
         public static Int32 RandomID()
         {
             return Program.rnd.Next(0, Denoms.Count());
+        }
+
+        public static void Save()
+        {
+            File.WriteAllText("Denoms.json", JsonConvert.SerializeObject(Denoms));
         }
     }
 }

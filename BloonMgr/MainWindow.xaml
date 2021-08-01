@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BloonMgr"
         mc:Ignorable="d"
-        Title="Менеджер заказов" Height="671" Width="986" ResizeMode="CanMinimize">
+        Title="Менеджер заказов" Height="671" Width="986" ResizeMode="CanMinimize" Icon="Balloon-icon.png">
     <Grid x:Name="mainGrid" x:FieldModifier="public">
         <TextBox x:Name="OrderSearch" Text="Поиск по заказам" FontSize="18.5" PreviewMouseLeftButtonUp="SearchHandle1" PreviewKeyUp="SearchHandle2" Width="650" Margin="10,10.5,0,0" VerticalAlignment="Top" Height="30" BorderBrush="{x:Null}" HorizontalAlignment="Left" Background="{x:Null}" Foreground="#FFBFBFBF"/>
         <!--SelectionChanged="Search_SelectionChanged"-->
-        <DataGrid x:Name="OrderGrid" IsReadOnly="False" HorizontalAlignment="Left" AutoGenerateColumns="False" Margin="10,40,0,0" VerticalAlignment="Top" Width="750" Height="275" SelectionChanged="OrderGrid_SelectionChanged" Foreground="Black" BorderBrush="{x:Null}" Background="{x:Null}">
+        <DataGrid x:Name="OrderGrid" SelectionMode="Single" IsReadOnly="False" HorizontalAlignment="Left" AutoGenerateColumns="False" Margin="10,40,0,0" VerticalAlignment="Top" Width="750" Height="275" SelectionChanged="OrderGrid_SelectionChanged" Foreground="Black" BorderBrush="{x:Null}" Background="{x:Null}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Номер" Binding="{Binding Path=OrderID, Mode=TwoWay}" IsReadOnly="True" Width="50"/>
                 <DataGridTextColumn Header="Дата" Binding="{Binding Path=Date, Mode=TwoWay,  StringFormat=dd.MM.yy}" IsReadOnly="True" Width="65"/>
@@ -22,12 +22,12 @@
         <Line X1="10" Y1="40.5" X2="760" Y2="40.5" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Line X1="10" Y1="314.5" X2="760" Y2="314.5" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Button x:Name="NewOrder" Content="➕ Новый заказ" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="105" Height="32" Click="NewOrder_Click"/>
-        <Button x:Name="DeleteOrder" Content="➖" HorizontalAlignment="Left" Margin="730,314,0,0" VerticalAlignment="Top" Width="30" Height="32" />
+        <Button x:Name="DeleteOrder" Content="➖" HorizontalAlignment="Left" Margin="730,314,0,0" VerticalAlignment="Top" Width="30" Height="32" Click="DeleteOrder_Click" />
 
         <DatePicker x:Name="OrderDate" HorizontalAlignment="Left" Margin="10,351,0,0" VerticalAlignment="Top" Width="115"/>
         <TextBox x:Name="OrderPhone" HorizontalAlignment="Left" FontSize="16" Height="24" Margin="130,351,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
         <TextBox x:Name="OrderNotes" HorizontalAlignment="Left" FontSize="16" Height="240" Margin="10,380,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300"/>
-        <DataGrid x:Name="OrderpartList" IsReadOnly="true" SelectionChanged="OrderpartList_SelectionChanged" AutoGenerateColumns="False" HorizontalAlignment="Left" Height="241" Margin="315,351,0,0" VerticalAlignment="Top" Width="445">
+        <DataGrid x:Name="OrderpartList" SelectionMode="Single" IsReadOnly="true" SelectionChanged="OrderpartList_SelectionChanged" AutoGenerateColumns="False" HorizontalAlignment="Left" Height="241" Margin="315,351,0,0" VerticalAlignment="Top" Width="445">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Товар" Binding="{Binding Path=ItemName}" Width="210"/>
                 <DataGridTextColumn Header="Цена" Binding="{Binding Path=Price}" Width="70"/>
