@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BloonMgr"
         mc:Ignorable="d"
-        Title="Менеджер заказов" Height="671" Width="986" ResizeMode="CanMinimize" Icon="Balloon-icon.png">
+        Title="Менеджер заказов" Height="671" Width="995" ResizeMode="CanMinimize" Icon="Balloon-icon.png" Closing="Window_Closing">
     <Grid x:Name="mainGrid" x:FieldModifier="public">
         <TextBox x:Name="OrderSearch" Text="Поиск по заказам" FontSize="18.5" PreviewMouseLeftButtonUp="SearchHandle1" PreviewKeyUp="SearchHandle2" Width="650" Margin="10,10.5,0,0" VerticalAlignment="Top" Height="30" BorderBrush="{x:Null}" HorizontalAlignment="Left" Background="{x:Null}" Foreground="#FFBFBFBF"/>
         <!--SelectionChanged="Search_SelectionChanged"-->
@@ -41,5 +41,12 @@
         <TextBox x:Name="ProductTotal" Text="{Binding Mode=OneWay}" HorizontalAlignment="Left" FontSize="14" Height="23" Margin="700,597,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" Width="60"/>
         <Button x:Name="AddPart" Content="➕" HorizontalAlignment="Left" Margin="315,597,0,0" VerticalAlignment="Top" Width="23" Height="23" Click="AddButton_Click"/>
         <Button x:Name="OrderSave" Content="💾 Сохранить" HorizontalAlignment="Left" Margin="115,314,0,0" VerticalAlignment="Top" Width="615" Height="32" Click="OrderSave_Click"/>
+        <Button x:Name="PreviousYearButton" Content="PrevYear" HorizontalAlignment="Left" Margin="765,11,0,0" VerticalAlignment="Top" Width="60" Height="30" Click="PrevNextYearButton_Click"/>
+
+        <Button x:Name="NextYearButton" Content="NextYear" HorizontalAlignment="Left" Margin="909,11,0,0" VerticalAlignment="Top" Width="60" Height="30" Click="PrevNextYearButton_Click"/>
+        <Label x:Name="CurrentYearDisplay" Content="CurrYear" HorizontalAlignment="Left" Margin="825,13,0,0" VerticalAlignment="Top" Height="28" Width="84" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label Content="◀" HorizontalAlignment="Left" Margin="825,13,0,0" VerticalAlignment="Top" Height="28"/>
+        <Label Content="▶" HorizontalAlignment="Left" Margin="888,13,0,0" VerticalAlignment="Top" Height="28"/>
+
     </Grid>
 </Window>

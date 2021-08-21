@@ -105,7 +105,7 @@ namespace BloonMgr
 
     public class OrderPart
     {
-        private Int32 ItemID;
+        public Int32 ItemID;
         public String ItemName
         {
             get { return Products.GetName(ItemID); }

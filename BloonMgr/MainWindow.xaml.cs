@@ -3,12 +3,13 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace BloonMgr
 {
     public partial class Program : Window
     {
-        private AppContext db = new AppContext();
         private ObservableCollection<OrderEntry> OrderList;
         //private OrderEntry SelectedOrder;
         private OrderPart SelectedPart;
@@ -17,19 +18,17 @@ namespace BloonMgr
         private bool UnsavedChanges = false;
         private bool isNewOrder = false;
         public static Random rnd = new Random();
+        private int selectedYear = DateTime.Today.Year;
+        //private string selectedYearString {
+        //    get {
+        //        return selectedYear.ToString();
+        //    }
+        //}
         public Program()
         {
             InitializeComponent();
+            ProcessYear();
 
-            OrderList = new ObservableCollection<OrderEntry> { new OrderEntry(DateTime.Now, "0501728331", "по рекламе", "2/491,95/20\\1/123,95/9"),
-                        new OrderEntry("0977299902", "инстаграмм", new ObservableCollection<OrderPart>() { new OrderPart(85, 2), new OrderPart(150), new OrderPart(23000, 25) })};
-
-            for (int x = 0; x < 100; x++)
-            {
-                OrderList.Add(new OrderEntry(DateTime.Today.AddDays(x), "050" + rnd.Next(1000000, 10000000), "по рекламе " + x, new ObservableCollection<OrderPart>() { OrderPart.RandomOrder(), OrderPart.RandomOrder(), OrderPart.RandomOrder() }));
-                OrderList.Add(new OrderEntry(DateTime.Today.AddDays(-x), "097" + rnd.Next(1000000, 10000000), "инстаграмм " + -x, new ObservableCollection<OrderPart>() { OrderPart.RandomOrder(), OrderPart.RandomOrder(), OrderPart.RandomOrder() }));
-            }
-            OrderGrid.ItemsSource = OrderList;
         }
 
         private void OrderGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -243,24 +242,49 @@ namespace BloonMgr
             }
         }
 
-        //private bool LoadData()
-        //{
-        //    try
-        //    {
-        //        System.IO.File.ReadAllText("orderlist.json");
-        //        return true;
-        //    }
-        //    catch { return false; }
-        //}
+        private void LoadOrders()
+        {
+            try
+            {
+                OrderList = JsonConvert.DeserializeObject<ObservableCollection<OrderEntry>>(File.ReadAllText("OrderList_" + selectedYear + ".json"));
+                OrderGrid.ItemsSource = OrderList;
+            }
+            catch (FileNotFoundException)
+            {
+                OrderList = new ObservableCollection<OrderEntry>();
+            }
+        }
 
-        //private bool SaveData()
-        //{
-        //    try
-        //    {
-        //        System.IO.File.WriteAllText("orderlist.json", JsonConvert.SerializeObject(OrderList));
-        //        return true;
-        //    }
-        //    catch { return false; }
-        //}
+        private void SaveOrders()
+        {
+            File.WriteAllText("OrderList_" + selectedYear + ".json", JsonConvert.SerializeObject(OrderList));
+        }
+
+        private void ProcessYear(int year = 0)
+        {
+            if (year == 0)
+                year = selectedYear;
+            else
+                selectedYear = year;
+            LoadOrders();
+            CurrentYearDisplay.Content = selectedYear;
+            PreviousYearButton.Content = (selectedYear - 1);
+            PreviousYearButton.IsEnabled = File.Exists("OrderList_" + (selectedYear - 1) + ".json");
+            NextYearButton.Content = (selectedYear + 1);
+            NextYearButton.IsEnabled = File.Exists("OrderList_" + (selectedYear + 1) + ".json");
+        }
+
+        private void PrevNextYearButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            ProcessYear(Convert.ToInt32(button.Content));
+            
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SaveOrders();
+        }
+
     }
 }

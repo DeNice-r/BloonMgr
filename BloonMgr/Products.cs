@@ -15,7 +15,16 @@ namespace BloonMgr
 
         static Products()
         {
-            Denoms = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("Denoms.json"));
+            var inputDemons = new List<string>(Denoms);
+            try
+            {
+                inputDemons = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("Denoms.json"));
+            }
+            catch (FileNotFoundException)
+            {
+                File.WriteAllText("Denoms.json", JsonConvert.SerializeObject(Denoms));
+            }
+            Denoms = new List<string>(inputDemons);
         }
 
         public static Int32 GetID(String denom)
